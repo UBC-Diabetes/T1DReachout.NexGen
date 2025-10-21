@@ -50,6 +50,9 @@ export const sendAPN = ({ userToken, notification, _removeToken }): void => {
 	note.topic = notification.topic;
 	note.mutableContent = 1;
 
+	logger.error('APN notification details - topic:', notification.topic, 'title:', notification.title, 'body:', notification.text);
+	console.log('[DEBUG] APN notification details - topic:', notification.topic, 'title:', notification.title, 'body:', notification.text);
+
 	if (!apnConnection) {
 		logger.error('APN connection is undefined. Skipping APN send.');
 		return;
@@ -66,7 +69,10 @@ export const sendAPN = ({ userToken, notification, _removeToken }): void => {
 			logger.error('APN response from Apple - sent:', response.sent.length, 'failed:', response.failed.length);
 			console.log('[DEBUG] APN response from Apple - sent:', response.sent.length, 'failed:', response.failed.length);
 			response.failed.forEach((failure) => {
-				logger.info(`Apple rejected notification - error code ${ failure.status } for token ${ userToken }`);
+				logger.error(`Apple rejected notification - error code ${ failure.status } reason: ${ failure.response?.reason } for token ${ userToken }`);
+				console.log(`[DEBUG] Apple rejected notification - error code ${ failure.status } reason: ${ failure.response?.reason } for token ${ userToken }`);
+				logger.error('Full failure object:', JSON.stringify(failure, null, 2));
+				console.log('[DEBUG] Full failure object:', JSON.stringify(failure, null, 2));
 
 				if (['400', '410'].includes(failure.status)) {
 					logger.debug(`Removing token ${ userToken }`);
@@ -151,11 +157,17 @@ export const initAPN = ({ options, absoluteUrl }): void => {
 		apnConnection = new apn.Provider(options.apn);
 		logger.error('APN Provider created successfully:', !!apnConnection);
 		console.log('[DEBUG] APN Provider created successfully:', !!apnConnection);
+		
+		// Log provider configuration details
+		logger.error('APN Provider config - production:', options.apn.production, 'gateway:', options.apn.gateway);
+		console.log('[DEBUG] APN Provider config - production:', options.apn.production, 'gateway:', options.apn.gateway);
 	} catch (e) {
 		logger.error('Error trying to initialize APN');
 		logger.error(e);
+		console.log('[DEBUG] Error trying to initialize APN:', e);
 	}
 	if (!apnConnection) {
 		logger.warn('APN push skipped: no connection available');
+		console.log('[DEBUG] APN push skipped: no connection available');
 	}
 };
