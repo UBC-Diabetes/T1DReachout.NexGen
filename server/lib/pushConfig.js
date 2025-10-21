@@ -74,7 +74,8 @@ Meteor.methods({
 });
 
 function configurePush() {
-	logger.info('configurePush called, Push_enable:', settings.get('Push_enable'));
+	logger.error('configurePush called, Push_enable:', settings.get('Push_enable'));
+	console.log('[DEBUG] configurePush called, Push_enable:', settings.get('Push_enable'));
 	if (!settings.get('Push_enable')) {
 		return;
 	}
@@ -112,14 +113,16 @@ function configurePush() {
 			apn = undefined;
 		}
 		
-		logger.info('APN config created:', !!apn);
+		logger.error('APN config created:', !!apn);
+		console.log('[DEBUG] APN config created:', !!apn);
 
 		if (!gcm.apiKey || gcm.apiKey.trim() === '' || !gcm.projectNumber || gcm.projectNumber.trim() === '') {
 			gcm = undefined;
 		}
 	}
 
-	logger.info('Push.configure called with apn:', !!apn, 'gcm:', !!gcm);
+	logger.error('Push.configure called with apn:', !!apn, 'gcm:', !!gcm);
+	console.log('[DEBUG] Push.configure called with apn:', !!apn, 'gcm:', !!gcm);
 	Push.configure({
 		apn,
 		gcm,

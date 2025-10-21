@@ -6,7 +6,8 @@ import { logger } from './logger';
 let apnConnection;
 
 export const sendAPN = ({ userToken, notification, _removeToken }): void => {
-	logger.info('sendAPN called for token:', userToken.substring(0, 10) + '...');
+	logger.error('sendAPN called for token:', userToken.substring(0, 10) + '...');
+	console.log('[DEBUG] sendAPN called for token:', userToken.substring(0, 10) + '...');
 	if (typeof notification.apn === 'object') {
 		notification = Object.assign({}, notification, notification.apn);
 	}
@@ -53,14 +54,17 @@ export const sendAPN = ({ userToken, notification, _removeToken }): void => {
 		logger.error('APN connection is undefined. Skipping APN send.');
 		return;
 	}
-	logger.info('APN connection status:', !!apnConnection);
+	logger.error('APN connection status:', !!apnConnection);
+	console.log('[DEBUG] APN connection status:', !!apnConnection);
 
 	try {
 		if (!apnConnection) { throw new Error('APN connection is undefined'); }
 
-		logger.info('Sending APN notification to Apple, token:', userToken.substring(0, 10) + '...');
+		logger.error('Sending APN notification to Apple, token:', userToken.substring(0, 10) + '...');
+		console.log('[DEBUG] Sending APN notification to Apple, token:', userToken.substring(0, 10) + '...');
 		apnConnection.send(note, userToken).then((response) => {
-			logger.info('APN response from Apple - sent:', response.sent.length, 'failed:', response.failed.length);
+			logger.error('APN response from Apple - sent:', response.sent.length, 'failed:', response.failed.length);
+			console.log('[DEBUG] APN response from Apple - sent:', response.sent.length, 'failed:', response.failed.length);
 			response.failed.forEach((failure) => {
 				logger.info(`Apple rejected notification - error code ${ failure.status } for token ${ userToken }`);
 
@@ -72,7 +76,8 @@ export const sendAPN = ({ userToken, notification, _removeToken }): void => {
 				}
 			});
 			if (response.sent.length > 0) {
-				logger.info('Apple accepted notification successfully');
+				logger.error('Apple accepted notification successfully');
+				console.log('[DEBUG] Apple accepted notification successfully');
 			}
 		});
 	} catch (e) {
@@ -141,9 +146,11 @@ export const initAPN = ({ options, absoluteUrl }): void => {
 
 	// Rig apn connection
 	try {
-		logger.info('Creating new APN Provider with options:', JSON.stringify(options.apn, null, 2));
+		logger.error('Creating new APN Provider with options:', JSON.stringify(options.apn, null, 2));
+		console.log('[DEBUG] Creating new APN Provider with options:', JSON.stringify(options.apn, null, 2));
 		apnConnection = new apn.Provider(options.apn);
-		logger.info('APN Provider created successfully:', !!apnConnection);
+		logger.error('APN Provider created successfully:', !!apnConnection);
+		console.log('[DEBUG] APN Provider created successfully:', !!apnConnection);
 	} catch (e) {
 		logger.error('Error trying to initialize APN');
 		logger.error(e);

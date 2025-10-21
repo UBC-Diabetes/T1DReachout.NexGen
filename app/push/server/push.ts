@@ -61,7 +61,8 @@ export class PushClass {
         this.options.apn?.key?.length,
 			);
 
-			logger.info('initAPN called with options present:', !!this.options);
+			logger.error('initAPN called with options present:', !!this.options);
+			console.log('[DEBUG] initAPN called with options present:', !!this.options);
 			initAPN({ options: this.options, absoluteUrl: Meteor.absoluteUrl() });
 		}
 	}
@@ -146,7 +147,8 @@ export class PushClass {
 			// Send to APN
 			if (this.options.apn) {
 				notification.topic = app.appName;
-				logger.info('About to call sendAPN');
+				logger.error('About to call sendAPN');
+				console.log('[DEBUG] About to call sendAPN');
 				sendAPN({
 					userToken: app.token.apn,
 					notification,
